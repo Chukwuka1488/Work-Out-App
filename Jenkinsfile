@@ -5,7 +5,7 @@ pipeline {
         DOCKER_IMAGE_BACKEND = 'chukwuka1488/your-nodejs-app'
         DOCKER_IMAGE_REACT = 'chukwuka1488/your-react-app'
         DOCKER_CREDENTIALS_ID = 'Haykay_14'
-        MONGO_URI = env.MONGO_URI // Fetches the MongoDB URI from Jenkins credentials
+        MONGO_URI = credentials('MONGO_URI') // Fetches the MongoDB URI from Jenkins credentials
     }
 
     stages {
