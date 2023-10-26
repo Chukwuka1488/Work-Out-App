@@ -30,16 +30,17 @@ pipeline {
         stage('Docker Build and Push') {
             steps {
                 echo 'Docker building and pushing....'
-                script {
-                    withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                
+                withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    script {
                         // Build and push backend image
-                        def appImageBackend = docker.build(DOCKER_IMAGE_BACKEND, '--build-arg MONGO_URI=$MONGO_URI ./backend')
+                        def appImageBackend = docker.build("${DOCKER_IMAGE_BACKEND}", "--build-arg MONGO_URI=${MONGO_URI} ./backend")
                         docker.withRegistry('https://registry.hub.docker.com', "${DOCKER_USERNAME}:${DOCKER_PASSWORD}") {
                             appImageBackend.push('latest')
                         }
-                        
+
                         // Build and push frontend image
-                        def appImageReact = docker.build(DOCKER_IMAGE_REACT, './frontend')
+                        def appImageReact = docker.build("${DOCKER_IMAGE_REACT}", './frontend')
                         docker.withRegistry('https://registry.hub.docker.com', "${DOCKER_USERNAME}:${DOCKER_PASSWORD}") {
                             appImageReact.push('latest')
                         }
