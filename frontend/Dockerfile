@@ -25,7 +25,7 @@ COPY --from=build /usr/src/app/build /usr/share/nginx/html
 # New step: Replace the default Nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-EXPOSE 3005
+EXPOSE 3000
 
 # Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
