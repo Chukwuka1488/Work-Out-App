@@ -28,7 +28,7 @@ USER backend
 ENV HOME=/app
 
 # Expose the port the app runs on
-EXPOSE 4000
+EXPOSE 8008
 
 ENV MONGO_URI=""
 
