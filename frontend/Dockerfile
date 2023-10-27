@@ -22,10 +22,14 @@ FROM nginx:alpine
 # Copy the build folder from build environment
 COPY --from=build /usr/src/app/build /usr/share/nginx/html
 
+# New step: Replace the default Nginx configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
 EXPOSE 3005
 
 # Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
+
 
 
 # FROM node:20.9.0-slim
