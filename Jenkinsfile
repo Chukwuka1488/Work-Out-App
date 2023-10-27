@@ -57,13 +57,23 @@ pipeline {
                             docker tag ${dockerImageFrontend.id} ${DOCKER_IMAGE_FRONTEND}:$BUILD_NUMBER
                             docker push ${DOCKER_IMAGE_FRONTEND}:$BUILD_NUMBER
 
-                            # Tag the images as latest and push to DockerHub
+                            // Tag the images as latest and push to DockerHub
                             docker tag ${dockerImageBackend.id} ${DOCKER_IMAGE_BACKEND}:latest
                             docker push ${DOCKER_IMAGE_BACKEND}:latest
                             docker tag ${dockerImageFrontend.id} ${DOCKER_IMAGE_FRONTEND}:latest
                             docker push ${DOCKER_IMAGE_FRONTEND}:latest
                         """
                     }
+                }
+            }
+        }
+
+        stage('Run Docker Container') {
+            steps {
+                withCredentials([string(credentialsId: 'MONGO_URI', variable: 'MONGODB_URI')]) {
+                    sh """
+                        docker run -p 8008:4000 -e MONGO_URI=$MONGODB_URI ${DOCKER_IMAGE_BACKEND}:latest
+                    """
                 }
             }
         } 
