@@ -152,3 +152,7 @@ docker run -d -p 8008:4000 -e MONGO_URI="mongodb://mongoadmin:secret@20.29.119.1
 #### Build frontend manually
 docker build -t frontend .
 docker run -d -p 3005:80 frontend
+
+# docker pull chukwuka1488/react-app:latest
+# docker run -p 3000:80 chukwuka1488/react-app:latest
+# docker run -p <docker expose>:<from development in github> chukwuka1488/react-app:latest
