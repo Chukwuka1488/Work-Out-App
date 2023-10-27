@@ -3,22 +3,20 @@ pipeline {
 
     environment {
         DOCKER_IMAGE_BACKEND = 'chukwuka1488/your-nodejs-app'
-        DOCKER_IMAGE_REACT = 'chukwuka1488/your-react-app'
+        DOCKER_IMAGE_FRONTEND = 'chukwuka1488/your-react-app'
         DOCKER_CREDENTIALS_ID = 'Haykay_14' // Replace with your Docker Hub credentials ID
-        MONGO_URI = credentials('MONGO_URI') // Fetches the MongoDB URI from Jenkins credentials
+        MONGODB_URI = credentials('MONGO_URI')
     }
 
     stages {
-        stage('Build') {
+        stage('Checkout') {
             steps {
-                echo 'Building..'
-                // Navigate to backend, install its dependencies
-                dir('backend') {
-                    sh '''
-                        npm install
-                    '''
-                }
-                // Navigate to frontend, install its dependencies
+                checkout scm
+            }
+        }
+
+        stage('Frontend Tests') {
+            steps {
                 dir('frontend') {
                     sh '''
                         npm install
@@ -27,26 +25,40 @@ pipeline {
             }
         }
 
-        stage('Docker Build and Push') {
+        stage('Backend Tests') {
             steps {
-                echo 'Docker building and pushing....'
-                
-                withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                    script {
-                        // Build and push backend image
-                        def appImageBackend = docker.build("${DOCKER_IMAGE_BACKEND}", "--build-arg MONGO_URI=${MONGO_URI} ./backend")
-                        docker.withRegistry('https://registry.hub.docker.com', "${DOCKER_USERNAME}:${DOCKER_PASSWORD}") {
-                            appImageBackend.push('latest')
-                        }
-
-                        // Build and push frontend image
-                        def appImageReact = docker.build("${DOCKER_IMAGE_REACT}", './frontend')
-                        docker.withRegistry('https://registry.hub.docker.com', "${DOCKER_USERNAME}:${DOCKER_PASSWORD}") {
-                            appImageReact.push('latest')
-                        }
-                    }
+                dir('backend') {
+                    sh '''
+                        npm install
+                        export MONGODB_URI=$MONGODB_URI
+                    '''
                 }
             }
         }
+
+        stage('Build Images') {
+            steps {
+                script {
+                    dockerImageBackend = docker.build("${DOCKER_IMAGE_BACKEND}:$BUILD_NUMBER", './backend')
+                    dockerImageFrontend = docker.build("${DOCKER_IMAGE_FRONTEND}:$BUILD_NUMBER", './frontend')
+                }
+            }
+        }
+
+        stage('Push Images to DockerHub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    script {
+                        sh '''
+                            echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
+                            docker tag backend ${DOCKER_IMAGE_BACKEND}:$BUILD_NUMBER
+                            docker push ${DOCKER_IMAGE_BACKEND}:$BUILD_NUMBER
+                            docker tag frontend ${DOCKER_IMAGE_FRONTEND}:$BUILD_NUMBER
+                            docker push ${DOCKER_IMAGE_FRONTEND}:$BUILD_NUMBER
+                        '''
+                    }
+                }
+            }
+        } 
     }
 }
