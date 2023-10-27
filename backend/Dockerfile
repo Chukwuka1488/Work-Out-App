@@ -1,20 +1,33 @@
- # Use an official Node.js runtime as the base image
-FROM node:20 
+# Use an official Node.js runtime as the base image
+FROM node:20.9.0-slim 
+
+# Metadata as described
+LABEL maintainer="Haykay"
+
+# Create a non-root user
+RUN useradd backend && mkdir /app && chown backend:backend /app
 
 # Set the working directory inside the container
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Copy package.json and package-lock.json to the container
+# Copy package.json and package-lock.json to the container first
+# This optimizes Docker's caching mechanism
 COPY package*.json ./
 
-# Install the application's dependencies inside the container
-RUN npm install
+# Install only production dependencies 
+# This reduces the image size by not installing devDependencies
+RUN npm install --production
 
 # Copy the rest of the application to the container
 COPY . .
 
-# Expose port 8008 to communicate with the application
+# Switch to the non-root user for better security
+USER backend
+
+# Expose the port the app runs on
 EXPOSE 8008
 
+ENV MONGO_URI=""
+
 # Command to run the application
-CMD ["node", "server.js"]
+CMD ["npm", "start"]
