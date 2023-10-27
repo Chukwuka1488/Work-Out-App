@@ -24,10 +24,9 @@ COPY --from=build /usr/src/app/build /usr/share/nginx/html
 
 EXPOSE 3005
 
-USER frontend
-
 # Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
+
 
 # FROM node:20.9.0-slim
 # LABEL maintainer="Haykay"
