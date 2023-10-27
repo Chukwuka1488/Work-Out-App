@@ -50,7 +50,7 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                     script {
-                        sh '''
+                        sh """
                             echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
                             docker tag ${dockerImageBackend.id} ${DOCKER_IMAGE_BACKEND}:$BUILD_NUMBER
                             docker push ${DOCKER_IMAGE_BACKEND}:$BUILD_NUMBER
@@ -62,7 +62,7 @@ pipeline {
                             docker push ${DOCKER_IMAGE_BACKEND}:latest
                             docker tag ${dockerImageFrontend.id} ${DOCKER_IMAGE_FRONTEND}:latest
                             docker push ${DOCKER_IMAGE_FRONTEND}:latest
-                        '''
+                        """
                     }
                 }
             }
