@@ -31,6 +31,7 @@ pipeline {
                     sh '''
                         npm install
                         export MONGODB_URI=$MONGODB_URI
+                        echo $MONGODB_URI
                     '''
                 }
             }
