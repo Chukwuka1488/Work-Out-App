@@ -56,7 +56,7 @@ pipeline {
                             docker tag frontend ${DOCKER_IMAGE_FRONTEND}:$BUILD_NUMBER
                             docker push ${DOCKER_IMAGE_FRONTEND}:$BUILD_NUMBER
 
-                            // Tag the images as latest and push to DockerHub
+                            # Tag the images as latest and push to DockerHub
                             docker tag backend ${DOCKER_IMAGE_BACKEND}:latest
                             docker push ${DOCKER_IMAGE_BACKEND}:latest
                             docker tag frontend ${DOCKER_IMAGE_FRONTEND}:latest
