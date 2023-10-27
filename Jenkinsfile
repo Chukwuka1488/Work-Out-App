@@ -52,15 +52,15 @@ pipeline {
                     script {
                         sh '''
                             echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
-                            docker tag backend ${DOCKER_IMAGE_BACKEND}:$BUILD_NUMBER
+                            docker tag ${dockerImageBackend.id} ${DOCKER_IMAGE_BACKEND}:$BUILD_NUMBER
                             docker push ${DOCKER_IMAGE_BACKEND}:$BUILD_NUMBER
-                            docker tag frontend ${DOCKER_IMAGE_FRONTEND}:$BUILD_NUMBER
+                            docker tag ${dockerImageFrontend.id} ${DOCKER_IMAGE_FRONTEND}:$BUILD_NUMBER
                             docker push ${DOCKER_IMAGE_FRONTEND}:$BUILD_NUMBER
 
                             # Tag the images as latest and push to DockerHub
-                            docker tag backend ${DOCKER_IMAGE_BACKEND}:latest
+                            docker tag ${dockerImageBackend.id} ${DOCKER_IMAGE_BACKEND}:latest
                             docker push ${DOCKER_IMAGE_BACKEND}:latest
-                            docker tag frontend ${DOCKER_IMAGE_FRONTEND}:latest
+                            docker tag ${dockerImageFrontend.id} ${DOCKER_IMAGE_FRONTEND}:latest
                             docker push ${DOCKER_IMAGE_FRONTEND}:latest
                         '''
                     }
