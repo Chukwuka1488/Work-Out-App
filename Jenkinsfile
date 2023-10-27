@@ -31,7 +31,7 @@ pipeline {
             steps {
                 echo 'Docker building and pushing....'
                 
-                withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                     script {
                         // Build and push backend image
                         def appImageBackend = docker.build("${DOCKER_IMAGE_BACKEND}", "--build-arg MONGO_URI=${MONGO_URI} ./backend")
