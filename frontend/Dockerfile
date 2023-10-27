@@ -1,4 +1,5 @@
-FROM node:20.9.0-slim
+# Build stage
+FROM node:20.9.0-slim AS build
 
 LABEL maintainer="Haykay"
 
@@ -15,7 +16,7 @@ COPY . .
 # Build the React app for production
 RUN npm run build
 
-# Use Nginx to serve the built app
+# Production stage
 FROM nginx:alpine
 
 # Copy the build folder from build environment
