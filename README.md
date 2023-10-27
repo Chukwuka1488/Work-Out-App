@@ -144,7 +144,7 @@ NB: for this to successfully run we need to run docker engine on the local serve
 
 #### Create Mongo
 docker run -d -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=mongoadmin -e MONGO_INITDB_ROOT_PASSWORD=secret -e MONGO+INITDB_DATABASE=my_db mongo
-
+export MONGODB_URI="MONGO_URI"
 #### Build backend manually
 docker build -t backend .
 docker run -d -p 8008:4000 -e MONGO_URI="mongodb://mongoadmin:secret@20.29.119.159:27017/?retryWrites=true&w=majority" backend
@@ -156,3 +156,18 @@ docker run -d -p 3005:80 frontend
 docker pull chukwuka1488/react-app:latest
 docker run -p 3000:80 chukwuka1488/react-app:latest
 docker run -p <docker expose>:<from development in github> chukwuka1488/react-app:latest
+
+#### Create helm chart
+cd /path/to/your/chart/parent/directory
+helm package ./mychart
+helm install myrelease ./mychart-0.1.0.tgz
+
+Here are a few Helm commands and flags that might be helpful:
+
+helm install --dry-run --debug1: This command simulates an install and returns the rendered manifest files. It’s a great way to see what the server would have done with your chart without actually performing the installation1.
+
+helm get manifest1: This command shows you what templates are installed on the server1.
+
+helm lint1: This command checks your chart for possible issues1.
+
+helm template --debug1: This command tests rendering chart templates locally1.
