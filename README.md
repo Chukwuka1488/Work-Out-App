@@ -152,3 +152,6 @@ docker run -d -p 8008:4000 -e MONGO_URI="mongodb://mongoadmin:secret@20.29.119.1
 #### Build frontend manually
 docker build -t frontend .
 docker run -d -p 3005:80 frontend
+
+docker pull chukwuka1488/your-nodejs-app:latest
+docker run -p 8080:8080 -e MONGO_URI=$MONGODB_URI chukwuka1488/your-nodejs-app:latest
