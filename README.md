@@ -174,7 +174,6 @@ helm lint1: This command checks your chart for possible issues1.
 helm template --debug1: This command tests rendering chart templates locally.
 
 
-
 1. Helm chart for Jenkins and port forward the UI
 2. Flux & Github Actions
 3. Github Workflows
@@ -190,4 +189,3 @@ https://docs.aws.amazon.com/eks/latest/userguide/prometheus.html
 
 Move into the values file and apply
 4. helm pull prometheus-community/prometheus 
-
