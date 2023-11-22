@@ -171,3 +171,20 @@ helm get manifest1: This command shows you what templates are installed on the s
 helm lint1: This command checks your chart for possible issues1.
 
 helm template --debug1: This command tests rendering chart templates locally1.
+
+
+1. Helm chart for Jenkins and port forward the UI
+2. Flux & Github Actions
+3. Github Workflows
+
+### Prometheus EKS
+https://docs.aws.amazon.com/eks/latest/userguide/prometheus.html
+
+1. helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+
+2. helm install prometheus prometheus-community/prometheus --namespace prometheus --set alertmanager.persitentVolume.storageClass="gp2" --set server.persistentVolume.storageClass="gp2" --set server.service.type=LoadBalancer
+
+3. [prometheus-server.prometheus.svc.cluster.local]
+
+Move into the values file and apply
+2. helm pull prometheus-community/prometheus 
