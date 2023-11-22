@@ -170,7 +170,8 @@ helm get manifest1: This command shows you what templates are installed on the s
 
 helm lint1: This command checks your chart for possible issues1.
 
-helm template --debug1: This command tests rendering chart templates locally1.
+
+helm template --debug1: This command tests rendering chart templates locally.
 
 
 1. Helm chart for Jenkins and port forward the UI
