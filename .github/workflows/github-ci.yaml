@@ -53,7 +53,13 @@ jobs:
 
           docker tag $DOCKER_IMAGE_FRONTEND:$GITHUB_RUN_NUMBER $DOCKER_IMAGE_FRONTEND:latest
           docker push $DOCKER_IMAGE_FRONTEND:latest
-
+      
+      # Install Fluxctl
+      - name: Install Fluxctl
+        run: |
+          curl -s https://fluxcd.io/install.sh | sudo bash
+          fluxctl version
+      
       # Update Flux CD Manifest stage
       - name: Update Flux CD Manifest
         if: github.ref == 'refs/heads/main'
