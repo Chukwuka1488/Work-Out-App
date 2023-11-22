@@ -187,4 +187,4 @@ https://docs.aws.amazon.com/eks/latest/userguide/prometheus.html
 3. [prometheus-server.prometheus.svc.cluster.local]
 
 Move into the values file and apply
-2. helm pull prometheus-community/prometheus 
+4. helm pull prometheus-community/prometheus 
