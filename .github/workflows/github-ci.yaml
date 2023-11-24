@@ -54,33 +54,46 @@ jobs:
         if: startsWith(github.ref, 'refs/heads/main')
         run: |
           if [ -d "production/backend" ]; then
-            docker build -t $DOCKER_IMAGE_BACKEND-production:$GITHUB_RUN_NUMBER ./production/backend
-          elif [ -d "staging/backend" ]; then
-            docker build -t $DOCKER_IMAGE_BACKEND-staging:$GITHUB_RUN_NUMBER ./staging/backend
-          elif [ -d "development/backend" ]; then
-            docker build -t $DOCKER_IMAGE_BACKEND-development:$GITHUB_RUN_NUMBER ./development/backend
+            docker build -t $DOCKER_IMAGE_BACKEND:production-$GITHUB_RUN_NUMBER ./production/backend
+            docker tag $DOCKER_IMAGE_BACKEND:production-$GITHUB_RUN_NUMBER $DOCKER_IMAGE_BACKEND-production:$GITHUB_RUN_NUMBER
+          fi
+          if [ -d "staging/backend" ]; then
+            docker build -t $DOCKER_IMAGE_BACKEND:staging-$GITHUB_RUN_NUMBER ./staging/backend
+            docker tag $DOCKER_IMAGE_BACKEND:staging-$GITHUB_RUN_NUMBER $DOCKER_IMAGE_BACKEND-staging:$GITHUB_RUN_NUMBER
+          fi
+          if [ -d "development/backend" ]; then
+            docker build -t $DOCKER_IMAGE_BACKEND:development-$GITHUB_RUN_NUMBER ./development/backend
+            docker tag $DOCKER_IMAGE_BACKEND:development-$GITHUB_RUN_NUMBER $DOCKER_IMAGE_BACKEND-development:$GITHUB_RUN_NUMBER
           fi
 
+      # Build and Tag Frontend Images
+      - name: Build and Tag Frontend Images
+        if: startsWith(github.ref, 'refs/heads/main')
+        run: |
           if [ -d "production/frontend" ]; then
-            docker build -t $DOCKER_IMAGE_FRONTEND-production:$GITHUB_RUN_NUMBER ./production/frontend
-          elif [ -d "staging/frontend" ]; then
-            docker build -t $DOCKER_IMAGE_FRONTEND-staging:$GITHUB_RUN_NUMBER ./staging/frontend
-          elif [ -d "development/frontend" ]; then
-            docker build -t $DOCKER_IMAGE_FRONTEND-development:$GITHUB_RUN_NUMBER ./development/frontend
+            docker build -t $DOCKER_IMAGE_FRONTEND:production-$GITHUB_RUN_NUMBER ./production/frontend
+            docker tag $DOCKER_IMAGE_FRONTEND:production-$GITHUB_RUN_NUMBER $DOCKER_IMAGE_FRONTEND-production:$GITHUB_RUN_NUMBER
+          fi
+          if [ -d "staging/frontend" ]; then
+            docker build -t $DOCKER_IMAGE_FRONTEND:staging-$GITHUB_RUN_NUMBER ./staging/frontend
+            docker tag $DOCKER_IMAGE_FRONTEND:staging-$GITHUB_RUN_NUMBER $DOCKER_IMAGE_FRONTEND-staging:$GITHUB_RUN_NUMBER
+          fi
+          if [ -d "development/frontend" ]; then
+            docker build -t $DOCKER_IMAGE_FRONTEND:development-$GITHUB_RUN_NUMBER ./development/frontend
+            docker tag $DOCKER_IMAGE_FRONTEND:development-$GITHUB_RUN_NUMBER $DOCKER_IMAGE_FRONTEND-development:$GITHUB_RUN_NUMBER
           fi
 
       # Push Images to DockerHub
       - name: Push Images to DockerHub
         run: |
           echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
-          docker push $DOCKER_IMAGE_BACKEND-production:$GITHUB_RUN_NUMBER || true
-          docker push $DOCKER_IMAGE_BACKEND-staging:$GITHUB_RUN_NUMBER || true
-          docker push $DOCKER_IMAGE_BACKEND-development:$GITHUB_RUN_NUMBER || true
-
-          docker push $DOCKER_IMAGE_FRONTEND-production:$GITHUB_RUN_NUMBER || true
-          docker push $DOCKER_IMAGE_FRONTEND-staging:$GITHUB_RUN_NUMBER || true
-          docker push $DOCKER_IMAGE_FRONTEND-development:$GITHUB_RUN_NUMBER || true
-      
+          docker push $DOCKER_IMAGE_BACKEND-production:$GITHUB_RUN_NUMBER
+          docker push $DOCKER_IMAGE_BACKEND-staging:$GITHUB_RUN_NUMBER
+          docker push $DOCKER_IMAGE_BACKEND-development:$GITHUB_RUN_NUMBER
+          docker push $DOCKER_IMAGE_FRONTEND-production:$GITHUB_RUN_NUMBER
+          docker push $DOCKER_IMAGE_FRONTEND-staging:$GITHUB_RUN_NUMBER
+          docker push $DOCKER_IMAGE_FRONTEND-development:$GITHUB_RUN_NUMBER 
+     
       # Install Fluxctl
       - name: Install Fluxctl
         run: |
