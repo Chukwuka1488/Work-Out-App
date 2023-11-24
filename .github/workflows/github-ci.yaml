@@ -54,35 +54,35 @@ jobs:
         if: ${{ startsWith(github.event.ref, 'refs/heads/main') }}
         run: |
           if [ -d "production/backend" ]; then
-            docker build -t $DOCKER_IMAGE_BACKEND:production:$GITHUB_RUN_NUMBER ./production/backend
+            docker build -t $DOCKER_IMAGE_BACKEND-production:$GITHUB_RUN_NUMBER ./production/backend
           fi
           if [ -d "staging/backend" ]; then
-            docker build -t $DOCKER_IMAGE_BACKEND:staging:$GITHUB_RUN_NUMBER ./staging/backend
+            docker build -t $DOCKER_IMAGE_BACKEND-staging:$GITHUB_RUN_NUMBER ./staging/backend
           fi
           if [ -d "development/backend" ]; then
-            docker build -t $DOCKER_IMAGE_BACKEND:development:$GITHUB_RUN_NUMBER ./development/backend
+            docker build -t $DOCKER_IMAGE_BACKEND-development:$GITHUB_RUN_NUMBER ./development/backend
           fi
 
           if [ -d "production/frontend" ]; then
-            docker build -t $DOCKER_IMAGE_FRONTEND:production:$GITHUB_RUN_NUMBER ./production/frontend
+            docker build -t $DOCKER_IMAGE_FRONTEND-production:$GITHUB_RUN_NUMBER ./production/frontend
           fi
           if [ -d "staging/frontend" ]; then
-            docker build -t $DOCKER_IMAGE_FRONTEND:staging:$GITHUB_RUN_NUMBER ./staging/frontend
+            docker build -t $DOCKER_IMAGE_FRONTEND-staging:$GITHUB_RUN_NUMBER ./staging/frontend
           fi
           if [ -d "development/frontend" ]; then
-            docker build -t $DOCKER_IMAGE_FRONTEND:development:$GITHUB_RUN_NUMBER ./development/frontend
+            docker build -t $DOCKER_IMAGE_FRONTEND-development:$GITHUB_RUN_NUMBER ./development/frontend
           fi
       # Push Images to DockerHub stage
       - name: Push Images to DockerHub
         run: |
           echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
-          docker push $DOCKER_IMAGE_BACKEND:production:$GITHUB_RUN_NUMBER
-          docker push $DOCKER_IMAGE_BACKEND:staging:$GITHUB_RUN_NUMBER
-          docker push $DOCKER_IMAGE_BACKEND:development:$GITHUB_RUN_NUMBER
+          docker push $DOCKER_IMAGE_BACKEND-production:$GITHUB_RUN_NUMBER
+          docker push $DOCKER_IMAGE_BACKEND-staging:$GITHUB_RUN_NUMBER
+          docker push $DOCKER_IMAGE_BACKEND-development:$GITHUB_RUN_NUMBER
 
-          docker push $DOCKER_IMAGE_FRONTEND:production:$GITHUB_RUN_NUMBER
-          docker push $DOCKER_IMAGE_FRONTEND:staging:$GITHUB_RUN_NUMBER
-          docker push $DOCKER_IMAGE_FRONTEND:development:$GITHUB_RUN_NUMBER
+          docker push $DOCKER_IMAGE_FRONTEND-production:$GITHUB_RUN_NUMBER
+          docker push $DOCKER_IMAGE_FRONTEND-staging:$GITHUB_RUN_NUMBER
+          docker push $DOCKER_IMAGE_FRONTEND-development:$GITHUB_RUN_NUMBER
       
       # Install Fluxctl
       - name: Install Fluxctl
@@ -95,18 +95,18 @@ jobs:
         run: |
           if [ -d "production/clusters/work-out-cluster" ]; then
             # Commands to update Flux CD for production
-            fluxctl release --namespace=flux-system --update-image=$DOCKER_IMAGE_BACKEND:production your-workload
-            fluxctl release --namespace=flux-system --update-image=$DOCKER_IMAGE_FRONTEND:production your-other-workload
+            fluxctl release --namespace=flux-system --update-image=$DOCKER_IMAGE_BACKEND-production:$GITHUB_RUN_NUMBER your-workload
+            fluxctl release --namespace=flux-system --update-image=$DOCKER_IMAGE_FRONTEND-production:$GITHUB_RUN_NUMBER your-other-workload
           fi
 
           if [ -d "staging/clusters/work-out-cluster" ]; then
             # Commands to update Flux CD for staging
-            fluxctl release --namespace=flux-system --update-image=$DOCKER_IMAGE_BACKEND:staging your-workload
-            fluxctl release --namespace=flux-system --update-image=$DOCKER_IMAGE_FRONTEND:staging your-other-workload
+            fluxctl release --namespace=flux-system --update-image=$DOCKER_IMAGE_BACKEND-staging:$GITHUB_RUN_NUMBER your-workload
+            fluxctl release --namespace=flux-system --update-image=$DOCKER_IMAGE_FRONTEND-staging:$GITHUB_RUN_NUMBER your-other-workload
           fi
 
           if [ -d "development/clusters/work-out-cluster" ]; then
             # Commands to update Flux CD for development
-            fluxctl release --namespace=flux-system --update-image=$DOCKER_IMAGE_BACKEND:development your-workload
-            fluxctl release --namespace=flux-system --update-image=$DOCKER_IMAGE_FRONTEND:development your-other-workload
+            fluxctl release --namespace=flux-system --update-image=$DOCKER_IMAGE_BACKEND-development:$GITHUB_RUN_NUMBER your-workload
+            fluxctl release --namespace=flux-system --update-image=$DOCKER_IMAGE_FRONTEND-development:$GITHUB_RUN_NUMBER your-other-workload
           fi
