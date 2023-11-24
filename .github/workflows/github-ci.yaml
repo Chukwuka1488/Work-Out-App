@@ -8,7 +8,7 @@ on:
       - 'production/**'
       - 'staging/**'
       - 'development/**'
-      - '.github/workflows/github-ci.yaml' 
+      - '.github/workflows/github-ci.yaml' # Triggers workflow on changes to CI file
 
 jobs:
   build:
@@ -22,7 +22,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Frontend Tests stage
+      # Frontend Installation
       - name: Frontend Installation
         if: startsWith(github.ref, 'refs/heads/main')
         run: |
@@ -35,7 +35,7 @@ jobs:
           fi
           npm install
 
-      # Backend Tests stage
+      # Backend Installation
       - name: Backend Installation
         if: startsWith(github.ref, 'refs/heads/main')
         run: |
@@ -49,8 +49,8 @@ jobs:
           npm install
           echo "MongoDB URI: ${MONGO_URI}"
 
-      # Build Images stage
-      - name: Build and Push Images
+      # Build Images
+      - name: Build Images
         if: startsWith(github.ref, 'refs/heads/main')
         run: |
           if [ -d "production/backend" ]; then
@@ -69,17 +69,17 @@ jobs:
             docker build -t $DOCKER_IMAGE_FRONTEND-development:$GITHUB_RUN_NUMBER ./development/frontend
           fi
 
-      # Push Images to DockerHub stage
+      # Push Images to DockerHub
       - name: Push Images to DockerHub
         run: |
           echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
-          docker push $DOCKER_IMAGE_BACKEND-production:$GITHUB_RUN_NUMBER
-          docker push $DOCKER_IMAGE_BACKEND-staging:$GITHUB_RUN_NUMBER
-          docker push $DOCKER_IMAGE_BACKEND-development:$GITHUB_RUN_NUMBER
+          docker push $DOCKER_IMAGE_BACKEND-production:$GITHUB_RUN_NUMBER || true
+          docker push $DOCKER_IMAGE_BACKEND-staging:$GITHUB_RUN_NUMBER || true
+          docker push $DOCKER_IMAGE_BACKEND-development:$GITHUB_RUN_NUMBER || true
 
-          docker push $DOCKER_IMAGE_FRONTEND-production:$GITHUB_RUN_NUMBER
-          docker push $DOCKER_IMAGE_FRONTEND-staging:$GITHUB_RUN_NUMBER
-          docker push $DOCKER_IMAGE_FRONTEND-development:$GITHUB_RUN_NUMBER
+          docker push $DOCKER_IMAGE_FRONTEND-production:$GITHUB_RUN_NUMBER || true
+          docker push $DOCKER_IMAGE_FRONTEND-staging:$GITHUB_RUN_NUMBER || true
+          docker push $DOCKER_IMAGE_FRONTEND-development:$GITHUB_RUN_NUMBER || true
       
       # Install Fluxctl
       - name: Install Fluxctl
@@ -87,19 +87,16 @@ jobs:
           curl -s https://fluxcd.io/install.sh | sudo bash
           fluxctl version
       
-      # Update Flux CD Manifest stage
+      # Update Flux CD Manifest
       - name: Update Flux CD Manifest
         run: |
           if [ -d "production/clusters/work-out-cluster" ]; then
-            # Commands to update Flux CD for production
             fluxctl release --namespace=flux-system --update-image=$DOCKER_IMAGE_BACKEND-production:$GITHUB_RUN_NUMBER your-workload
             fluxctl release --namespace=flux-system --update-image=$DOCKER_IMAGE_FRONTEND-production:$GITHUB_RUN_NUMBER your-other-workload
           elif [ -d "staging/clusters/work-out-cluster" ]; then
-            # Commands to update Flux CD for staging
             fluxctl release --namespace=flux-system --update-image=$DOCKER_IMAGE_BACKEND-staging:$GITHUB_RUN_NUMBER your-workload
             fluxctl release --namespace=flux-system --update-image=$DOCKER_IMAGE_FRONTEND-staging:$GITHUB_RUN_NUMBER your-other-workload
           elif [ -d "development/clusters/work-out-cluster" ]; then
-            # Commands to update Flux CD for development
             fluxctl release --namespace=flux-system --update-image=$DOCKER_IMAGE_BACKEND-development:$GITHUB_RUN_NUMBER your-workload
             fluxctl release --namespace=flux-system --update-image=$DOCKER_IMAGE_FRONTEND-development:$GITHUB_RUN_NUMBER your-other-workload
           fi
