@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v2
 
       # Frontend Tests stage
-      - name: Frontend Tests
+      - name: Frontend Installation
         if: startsWith(github.ref, 'refs/heads/main')
         run: |
           if [ -d "production/frontend" ]; then
@@ -35,7 +35,7 @@ jobs:
           npm install
 
       # Backend Tests stage
-      - name: Backend Tests
+      - name: Backend Installation
         if: startsWith(github.ref, 'refs/heads/main')
         run: |
           if [ -d "production/backend" ]; then
