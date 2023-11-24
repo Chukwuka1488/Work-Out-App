@@ -189,3 +189,38 @@ https://docs.aws.amazon.com/eks/latest/userguide/prometheus.html
 
 Move into the values file and apply
 4. helm pull prometheus-community/prometheus 
+
+
+Trying to configure flux:
+
+My application repo: https://github.com/Chukwuka1488/Work-Out-App
+The flux repo: https://github.com/Chukwuka1488/flux-fleet/tree/main/clusters/work-out-cluster
+
+I used these commands to bootstrap the flux and also create source and customization files
+```sh
+        brew install fluxcd/tap/flux
+
+        export GITHUB_TOKEN=<your-token>
+        export GITHUB_USER=<your-username>
+
+        flux check --pre
+
+        <!-- Do all of this in the root of the repo for the various branches -->
+        flux bootstrap github --owner $GITHUB_USER --repository flux-fleet --branch main --token-auth --path ./clusters/work-out-cluster --personal true
+
+        flux create source git staging --url https://github.com/$GITHUB_USER/work-out-app --branch staging --interval 1m --export | tee clusters/work-out-cluster/work-out-app-staging.yaml
+
+        flux create source git dev --url https://github.com/$GITHUB_USER/work-out-app --branch dev --interval 1m --export | tee clusters/work-out-cluster/work-out-app-dev.yaml
+
+        flux create source git production --url https://github.com/$GITHUB_USER/work-out-app --branch main --interval 1m --export | tee clusters/work-out-cluster/work-out-app-production.yaml
+
+        flux create kustomization work-out-app-staging --source work-out-app-staging --path "./" --prune true --validation client --interval 10m --export | tee -a clusters/work-out-cluster/work-out-app-staging.yaml
+
+        flux create kustomization work-out-app-dev --source work-out-app-dev --path "./" --prune true --interval 10m --export | tee -a clusters/work-out-cluster/work-out-app-dev.yaml
+
+        flux create kustomization work-out-app-production --source work-out-app-production --path "./" --prune true --interval 10m --export | tee -a clusters/work-out-cluster/work-out-app-production.yaml
+```
+
+The problem is how do i then generate the kustomization and source files for the 3 branches.
+So that the pods and services can be deployed.
+What am i missing??
